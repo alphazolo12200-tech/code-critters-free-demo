@@ -27,6 +27,12 @@ A friendly puzzle game that teaches kids the basics of coding. Guide a little ro
 3. Press **Run** and watch the robot go.
 4. Tap a block in your program to remove it.
 
+## Watch the videos
+
+- https://youtu.be/kEw4J_vthUo
+- https://youtu.be/ujuGAHRxpRg
+- https://youtu.be/6WHQABnQADA
+
 ## Who it is for
 
 Kids aged about 6 to 10, plus younger children playing with a parent. It works well at home or in a classroom, on a computer, tablet or phone.
