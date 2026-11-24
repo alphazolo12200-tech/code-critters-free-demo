@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Code Critters: Free Demo</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap">
+<style>
+:root{--bg:#E8F3FF;--panel:#fff;--ink:#17294D;--line:#C9DCF2;--cell:#F4F9FF;--cell2:#DCEBFB;--blue:#3D7BFF;--green:#22B573;--pink:#FF5C8A;--sun:#FFC93C;--onc:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1A33;--panel:#18284A;--ink:#EAF2FF;--line:#2E4472;--cell:#1D3057;--cell2:#243B68;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0F1A33;--panel:#18284A;--ink:#EAF2FF;--line:#2E4472;--cell:#1D3057;--cell2:#243B68;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Baloo 2","Trebuchet MS","Comic Sans MS",system-ui,sans-serif;font-size:18px;line-height:1.35}
+.app{max-width:940px;margin:0 auto;padding:14px}
+header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+h1{margin:0;font-size:2rem;font-weight:800;letter-spacing:.01em}
+h2{margin:0 0 4px;font-size:1.25rem;font-weight:700}
+#levels{display:flex;gap:6px;flex-wrap:wrap;width:100%}
+#mute{border:3px solid var(--line);border-radius:14px;background:var(--panel);color:var(--ink);font:inherit;font-weight:700;padding:6px 12px;cursor:pointer}
+#levels button{min-width:46px;height:46px;border-radius:14px;border:3px solid var(--line);background:var(--panel);color:var(--ink);font:inherit;font-weight:800;cursor:pointer;line-height:1}
+#levels button small{display:block;font-size:.6rem;color:var(--sun)}
+#levels button.cur{border-color:var(--blue);background:var(--blue);color:#fff}
+#levels button:disabled{opacity:.4;cursor:not-allowed}
+.grid{display:grid;gap:16px}
+@media(min-width:780px){.grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}}
+.card{background:var(--panel);border:3px solid var(--line);border-radius:22px;padding:14px}
+#board{position:relative;width:100%;max-width:460px;aspect-ratio:1;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);border-radius:18px;overflow:hidden;border:4px solid var(--ink)}
+.cell{display:flex;align-items:center;justify-content:center;font-size:clamp(1.6rem,8vw,2.6rem);background:var(--cell)}
+.cell.a{background:var(--cell2)}
+#bot{position:absolute;width:20%;height:20%;display:flex;align-items:center;justify-content:center;font-size:clamp(1.8rem,9vw,3rem);transition:left .35s,top .35s}
+#bot .ptr{position:absolute;inset:4%;transition:transform .3s}
+#bot .ptr::after{content:"";position:absolute;top:-2%;left:50%;margin-left:-9px;border:9px solid transparent;border-bottom:13px solid var(--pink);border-top:0}
+#bot.bump{animation:bump .35s}
+@keyframes bump{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.pal{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.pal button{touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+.over{outline:3px dashed var(--sun);outline-offset:2px}
+.tip{margin:0;font-size:.9rem;opacity:.75}
+.pal button,.chip{border:0;border-radius:14px;padding:10px 14px;font:inherit;font-weight:700;color:var(--onc);cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.22)}
+.pal button:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.22)}
+.F{background:var(--blue)}.L,.R{background:var(--green)}.rep{background:var(--pink)}
+#prog{min-height:96px;display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start;padding:10px;border:3px dashed var(--line);border-radius:16px}
+.chip{padding:6px 12px;box-shadow:0 3px 0 rgba(0,0,0,.22)}
+.empty{margin:0;opacity:.7;width:100%}
+.loop{border:3px solid var(--pink);border-radius:16px;padding:6px;width:100%}
+.loop.on{background:rgba(255,92,138,.14)}
+.lh{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.lh button{border:0;border-radius:10px;font:inherit;font-weight:700;cursor:pointer;padding:3px 10px;background:var(--pink);color:#fff}
+.lh .n{background:var(--line);color:var(--ink)}.lh .x{margin-left:auto;background:transparent;color:var(--ink)}
+.lb{display:flex;flex-wrap:wrap;gap:6px;min-height:40px;padding:6px 0 2px}
+.lb .hint{margin:0;font-size:.85rem;opacity:.7}
+.ctl{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
+.ctl button{border:0;border-radius:16px;padding:12px 18px;font:inherit;font-weight:800;cursor:pointer;background:var(--line);color:var(--ink)}
+#go{background:var(--green);color:#fff;font-size:1.2rem;box-shadow:0 4px 0 rgba(0,0,0,.25)}
+#next{background:var(--sun);color:#17294D;display:none}
+#cnt{margin-left:auto;font-size:.9rem;opacity:.8}
+#msg{min-height:54px;margin:12px 0 0;padding:10px 14px;border-radius:14px;background:var(--cell2)}
+button:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){#bot,#bot .ptr{transition:none}#bot.bump{animation:none}}
+footer{margin:18px 0 6px;text-align:center;font-size:.8rem;opacity:.7}
+#buy{background:var(--sun);color:#17294D;border-radius:14px;padding:8px 14px;font-weight:800;text-decoration:none}
+#end{position:fixed;inset:0;background:rgba(15,26,51,.78);display:none;align-items:center;justify-content:center;padding:16px;z-index:20}
+#end .box{background:var(--panel);border:4px solid var(--sun);border-radius:24px;padding:22px;max-width:420px;text-align:center}
+#end a,#end button{display:block;width:100%;margin:10px 0 0;border:0;border-radius:16px;padding:12px;font:inherit;font-weight:800;font-size:1.05rem;cursor:pointer;text-decoration:none}
+#end a{background:var(--green);color:#fff}#end button{background:var(--line);color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="app">
+<header><h1>🤖 Code Critters</h1><a id="buy" href="https://alphazolozyro.itch.io/code-critters" target="_blank" rel="noopener">Get all 12 levels</a><button id="mute" aria-pressed="false">🔊 Sound on</button><div id="levels" role="group" aria-label="Levels"></div></header>
+<div class="grid">
+<section class="card"><h2 id="ttl"></h2><div id="board" aria-label="Game board"></div><p id="msg" role="status"></p></section>
+<section class="card">
+<h2>Blocks</h2><p class="tip">Drag a block into your program, or just tap it.</p>
+<div class="pal">
+<button class="F" data-a="F">▲ Forward</button>
+<button class="L" data-a="L">↶ Turn left</button>
+<button class="R" data-a="R">↷ Turn right</button>
+<button class="rep" data-a="rep">↻ Repeat</button>
+</div>
+<h2>My program</h2>
+<div id="prog"></div>
+<div class="ctl">
+<button id="go">▶ Run</button><button id="reset">Reset robot</button><button id="clear">Clear</button><button id="next">Next level</button>
+<span id="cnt"></span>
+</div>
+</section>
+</div>
+<footer>© 2026 alphazolozyro. All rights reserved.</footer>
+</div>
+<div id="end" role="dialog" aria-modal="true"><div class="box"><h2>You finished the free demo!</h2><p>Want more puzzles? The full game has 12 levels, bigger loops and a grand finale.</p><a href="https://alphazolozyro.itch.io/code-critters" target="_blank" rel="noopener">Get the full game (12 levels)</a><button id="again">Play the demo again</button></div></div>
+<script>
+function showEnd(){document.getElementById('end').style.display='flex'}
+const LV=[
+{n:'Roll to the star',s:[0,4,1],g:[3,4],r:[],par:3,h:'Drag ▲ Forward into your program (or just tap it), then press Run. The star is 3 steps away.'},
+{n:'Turn the corner',s:[0,4,1],g:[3,1],r:[[1,1],[2,2],[0,2]],par:5,h:'Go along the bottom, turn left, then climb up to the star.'},
+{n:'Around the trees',s:[0,0,1],g:[4,3],r:[[2,2],[1,3],[3,3]],par:6,h:'Move along the top, turn right, then go down.'},
+{n:'Try a loop',s:[0,4,1],g:[4,4],r:[[1,2],[3,1],[2,0]],par:2,h:'Tap ↻ Repeat, then ▲ Forward. Blocks go inside the loop. Use + to change how many times.'}
+];
+const LAB={F:'▲ Forward',L:'↶ Left',R:'↷ Right'};
+const $=id=>document.getElementById(id);
+let li=0,prog=[],tgt=null,run=false,done=[],stars=[],R,timer;
+const cnt=l=>l.reduce((a,b)=>a+1+(b.t=='rep'?cnt(b.body):0),0);
+const flat=l=>l.flatMap(x=>x.t=='rep'?Array.from({length:x.n},()=>flat(x.body)).flat():[x.t]);
+const msg=t=>{$('msg').textContent=t};
+let AC=null,mute=false;
+function tone(f,d,ty,v,t0){
+ if(mute)return;
+ try{
+  AC=AC||new(window.AudioContext||window.webkitAudioContext)();
+  if(AC.state=='suspended')AC.resume();
+  const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime+(t0||0);
+  o.type=ty||'sine';o.frequency.value=f;
+  g.gain.setValueAtTime(v||.15,t);g.gain.exponentialRampToValueAtTime(.001,t+d);
+  o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d);
+ }catch(e){}
+}
+const SFX={
+ tap:()=>tone(520,.08,'square',.06),
+ move:()=>tone(330,.12,'triangle',.18),
+ turn:()=>{tone(440,.07,'triangle',.15);tone(587,.07,'triangle',.15,.07)},
+ bump:()=>tone(110,.25,'sawtooth',.18),
+ win:()=>[523,659,784,1047].forEach((f,i)=>tone(f,.25,'triangle',.2,i*.13)),
+ lose:()=>{tone(300,.15,'sine',.15);tone(220,.25,'sine',.15,.15)}
+};
+function board(){
+ const b=$('board'),L=LV[li];b.innerHTML='';
+ for(let y=0;y<5;y++)for(let x=0;x<5;x++){
+  const c=document.createElement('div');c.className='cell'+((x+y)%2?' a':'');
+  if(L.r.some(r=>r[0]==x&&r[1]==y))c.textContent='🌲';
+  if(L.g[0]==x&&L.g[1]==y)c.textContent='⭐';
+  b.appendChild(c);
+ }
+ b.insertAdjacentHTML('beforeend','<div id="bot">🤖<div class="ptr"></div></div>');
+ resetBot();
+}
+function place(){
+ const e=$('bot');e.style.left=R.x*20+'%';e.style.top=R.y*20+'%';
+ e.querySelector('.ptr').style.transform='rotate('+R.a+'deg)';
+}
+function resetBot(){const s=LV[li].s;R={x:s[0],y:s[1],a:(s[2]-0)*90};
+ const e=$('bot');e.style.transition='none';place();void e.offsetWidth;e.style.transition='';}
+const dir=()=>((R.a/90)%4+4)%4;
+function step(a){
+ if(a=='L'){R.a-=90;place();SFX.turn();return true}
+ if(a=='R'){R.a+=90;place();SFX.turn();return true}
+ const d=dir(),nx=R.x+[0,1,0,-1][d],ny=R.y+[-1,0,1,0][d];
+ const out=nx<0||ny<0||nx>4||ny>4,tree=LV[li].r.some(r=>r[0]==nx&&r[1]==ny);
+ if(out||tree){const e=$('bot');e.classList.remove('bump');void e.offsetWidth;e.classList.add('bump');SFX.bump();
+  msg(tree?'Bonk! A tree is in the way. Reset and try another path.':'Bonk! That is the edge of the board. Reset and try again.');return false}
+ R.x=nx;R.y=ny;place();SFX.move();return true;
+}
+function go(){
+ if(run)return;resetBot();const s=flat(prog);
+ if(!s.length){msg('Add some blocks first, then press Run.');return}
+ run=true;let i=0;$('next').style.display='none';msg('Running…');
+ timer=setInterval(()=>{
+  if(i>=s.length){clearInterval(timer);run=false;finish();return}
+  if(!step(s[i++])){clearInterval(timer);run=false}
+ },480);
+}
+function finish(){
+ const L=LV[li];
+ if(R.x==L.g[0]&&R.y==L.g[1]){
+  const n=cnt(prog),st=n<=L.par?3:n<=L.par+2?2:1;
+  done[li]=true;stars[li]=Math.max(stars[li]||0,st);SFX.win();save();
+  msg('You did it! '+'★'.repeat(st)+'☆'.repeat(3-st)+(st<3?' Can you do it with fewer blocks?':' Perfect!')+(li==LV.length-1?'':''));
+  if(li<LV.length-1)$('next').style.display='inline-block';else setTimeout(showEnd,1500);
+  levels();
+ }else{SFX.lose();msg('Not quite. The star is still waiting. Press Reset robot and change your blocks.')}
+}
+function add(t){SFX.tap();
+ if(run)return;
+ if(t=='rep'){
+  if(tgt){msg('Loops can’t go inside loops yet.');return}
+  const r={t:'rep',n:3,body:[]};prog.push(r);tgt=r;
+  msg('Blocks you tap now go inside the loop. Tap ↻ Repeat in your program to leave it.');
+ }else(tgt?tgt.body:prog).push({t});
+ renderProg();
+}
+function mk(it,arr){
+ if(it.t=='rep'){
+  const w=document.createElement('div');w.className='loop'+(tgt===it?' on':'');w._it=it;
+  w.innerHTML='<div class="lh"><button class="lt">↻ Repeat</button><button class="n m" aria-label="Fewer times">−</button><b>'+it.n+'×</b><button class="n p" aria-label="More times">+</button><button class="x" aria-label="Remove loop">✕</button></div><div class="lb"></div>';
+  const q=s=>w.querySelector(s);
+  q('.lt').onclick=()=>{if(!run){tgt=tgt===it?null:it;renderProg()}};
+  q('.m').onclick=()=>{if(!run){it.n=Math.max(2,it.n-1);renderProg()}};
+  q('.p').onclick=()=>{if(!run){it.n=Math.min(9,it.n+1);renderProg()}};
+  q('.x').onclick=()=>{if(run)return;arr.splice(arr.indexOf(it),1);if(tgt===it)tgt=null;renderProg()};
+  const lb=q('.lb');
+  if(!it.body.length)lb.innerHTML='<p class="hint">Tap a block above to put it in here.</p>';
+  it.body.forEach(b=>lb.appendChild(mk(b,it.body)));
+  return w;
+ }
+ const c=document.createElement('button');c.className='chip '+it.t;c.textContent=LAB[it.t];c.title='Tap to remove';
+ c.onclick=()=>{if(run)return;arr.splice(arr.indexOf(it),1);renderProg()};
+ return c;
+}
+function renderProg(){
+ const p=$('prog');p.innerHTML='';
+ if(!prog.length)p.innerHTML='<p class="empty">Drag blocks here, or tap them above. Tap a block here to remove it.</p>';
+ prog.forEach(it=>p.appendChild(mk(it,prog)));
+ $('cnt').textContent=cnt(prog)+' blocks, goal '+LV[li].par+' or fewer';
+}
+function levels(){
+ const w=$('levels');w.innerHTML='';
+ LV.forEach((_,i)=>{
+  const b=document.createElement('button');
+  b.innerHTML=(i+1)+'<small>'+(stars[i]?'★'.repeat(stars[i]):'&nbsp;')+'</small>';
+  b.className=i==li?'cur':'';b.disabled=i>0&&!done[i-1];b.setAttribute('aria-label','Level '+(i+1));
+  b.onclick=()=>load(i);w.appendChild(b);
+ });
+}
+function load(i){
+ clearInterval(timer);run=false;li=i;prog=[];tgt=null;
+ $('ttl').textContent='Level '+(i+1)+': '+LV[i].n;
+ $('next').style.display='none';board();renderProg();levels();msg(LV[i].h);
+}
+document.querySelectorAll('.pal button').forEach(b=>{
+ let sx=null,sy=0,g=null;
+ const clr=()=>document.querySelectorAll('.over').forEach(n=>n.classList.remove('over'));
+ const hl=e=>{clr();const el=document.elementFromPoint(e.clientX,e.clientY),t=el&&(el.closest('.loop')||el.closest('#prog'));if(t)t.classList.add('over')};
+ b.onpointerdown=e=>{sx=e.clientX;sy=e.clientY;b._d=false};
+ b.onpointermove=e=>{
+  if(sx===null||run)return;
+  if(!g&&Math.hypot(e.clientX-sx,e.clientY-sy)>10){
+   g=b.cloneNode(true);g.style.cssText='position:fixed;pointer-events:none;z-index:9;opacity:.92;transform:translate(-50%,-50%) rotate(-4deg)';
+   document.body.appendChild(g);b.setPointerCapture(e.pointerId);b._d=true;
+  }
+  if(g){g.style.left=e.clientX+'px';g.style.top=e.clientY+'px';hl(e)}
+ };
+ b.onpointerup=e=>{
+  if(g){
+   const el=document.elementFromPoint(e.clientX,e.clientY),lp=el&&el.closest('.loop');
+   g.remove();g=null;clr();
+   if(lp||(el&&el.closest('#prog'))){tgt=lp?lp._it:null;add(b.dataset.a);renderProg()}
+  }
+  sx=null;
+ };
+ b.onpointercancel=()=>{if(g){g.remove();g=null}sx=null;clr()};
+ b.onclick=()=>{if(b._d){b._d=false;return}add(b.dataset.a)};
+});
+$('go').onclick=go;
+$('again').onclick=()=>{$('end').style.display='none';done=[];stars=[];save();load(0)};
+const mb=$('mute');
+mb.onclick=()=>{mute=!mute;mb.textContent=mute?'🔇 Sound off':'🔊 Sound on';mb.setAttribute('aria-pressed',mute)};
+$('reset').onclick=()=>{clearInterval(timer);run=false;resetBot();msg(LV[li].h)};
+$('clear').onclick=()=>{if(run)return;prog=[];tgt=null;renderProg()};
+$('next').onclick=()=>load(li+1);
+function save(){try{localStorage.setItem('codeCrittersDemo',JSON.stringify({d:done,s:stars}))}catch(e){}}
+try{const o=JSON.parse(localStorage.getItem('codeCrittersDemo')||'{}');done=o.d||[];stars=o.s||[]}catch(e){}
+let f0=0;while(f0<LV.length&&done[f0])f0++;
+load(f0<LV.length?f0:0);
+</script>
+</body>
+</html>
